@@ -8,4 +8,4 @@
 - [ ] js-cookie
 - [ ] TypeScript
 
-![image](https://hackmd.io/_uploads/HyyV8FuNC.png)
+![alt text](image.png)
