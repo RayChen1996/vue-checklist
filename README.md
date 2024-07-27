@@ -4,8 +4,9 @@
 
 - [ ] VeeValidate
 - [ ] Pinia
-- [ ] axios
-- [ ] js-cookie
+- [ ] Fetch
+- [ ] Async Await
 - [ ] TypeScript
+- [ ] Unit Test
 
 ![alt text](image.png)
