@@ -1,13 +1,46 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../Store/auth";
+import { useNickNameStore } from "../Store/nickName";
+// 獲取環境變數
+const apiUrl = import.meta.env.VITE_URL;
+
+const { setToken } = useAuthStore();
+const { setName } = useNickNameStore();
 const isReg = ref(false);
 
-const habdleSwitch = (val: boolean) => {
+const userName = ref("");
+const password = ref("");
+
+const router = useRouter();
+const habdleSwitch = (val) => {
   isReg.value = val;
 };
 
-const loginFn = () => {
-  alert("6811520");
+const loginFn = async () => {
+  // 假設你有一個 login API 需要使用 apiUrl
+  const response = await fetch(`${apiUrl}users/sign_in`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: userName.value, // 替換為真實的 email
+      password: password.value, // 替換為真實的密碼
+    }),
+  });
+  const data = await response.json();
+
+  if (response.ok) {
+    // console.log("登入成功", data);
+    setToken(data.token);
+    setName(data.nickname);
+
+    router.push("/todo");
+  } else {
+    console.error("登入失敗", data.message);
+  }
 };
 </script>
 <template>
@@ -68,6 +101,7 @@ const loginFn = () => {
               <input
                 class="form-control mb-3"
                 type="email"
+                v-model="userName"
                 id="email"
                 placeholder="請輸入Email"
               />
@@ -75,6 +109,7 @@ const loginFn = () => {
               <input
                 class="form-control mb-3"
                 type="password"
+                v-model="password"
                 id="password"
                 placeholder="請輸入密碼"
               />
