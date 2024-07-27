@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { Plus, XIcon, Edit } from "lucide-vue-next";
 import { useAuthStore } from "../Store/auth";
 const todos = ref([]);
@@ -7,6 +7,7 @@ const authStore = useAuthStore();
 const token = ref("");
 const newTodoText = ref("");
 const categoryName = ref("all");
+const notCompleteLen = ref(0);
 // 獲取環境變數
 const apiUrl = import.meta.env.VITE_URL;
 
@@ -36,7 +37,21 @@ const fetchTodos = async () => {
     default:
       break;
   }
+  const _notCompleteLen = computed(() => {
+    return todos.value.filter((item) => !item.status).length;
+  });
+  notCompleteLen.value = _notCompleteLen;
+  // console.log("未完成數", notCompleteLen);
   // console.log(todos.value);
+};
+
+const handleDeleteCompleted = () => {
+  todos.value.forEach((item, idx) => {
+    // console.log(item.id);
+    if (item.status) {
+      handleClickDelTodo(item.id);
+    }
+  });
 };
 
 const showToggleList = (category) => {
@@ -149,9 +164,6 @@ const handelOpenEditModal = (obj) => {
   }
 };
 onMounted(() => {
-  // console.log("mounted");
-
-  // console.log(authStore.token);
   token.value = authStore.token;
 
   fetchTodos();
@@ -254,8 +266,8 @@ onMounted(() => {
     </ul>
 
     <div class="flex justify-between px-5 py-3">
-      <span>{{ todos.length }} 個待完成項目</span>
-      <span>清除已完成項目</span>
+      <span>{{ notCompleteLen }} 個待完成項目</span>
+      <span @click="handleDeleteCompleted">清除已完成項目</span>
     </div>
   </div>
   <dialog id="my_modal_1" className="modal">

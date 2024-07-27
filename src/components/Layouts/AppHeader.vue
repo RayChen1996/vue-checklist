@@ -1,11 +1,16 @@
 <script setup>
 import { useNickNameStore } from "../../Store/nickName";
+import { useRouter } from "vue-router";
+
 import { useAuthStore } from "../../Store/auth";
-import { computed } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 const nickNameStore = useNickNameStore();
 const authStore = useAuthStore();
-// console.log(authStore.token);
+const token = ref("");
+const router = useRouter();
+const apiUrl = import.meta.env.VITE_URL;
+
 const route = useRoute();
 
 const isHidden = computed(() => route.path === "/sign-in");
@@ -34,6 +39,40 @@ const signOutFn = async () => {
     console.error("註冊失敗", data.message);
   }
 };
+
+const checkOutFn = async () => {
+  const response = await fetch(`${apiUrl}users/checkout`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `${token.value}`,
+    },
+  });
+  const data = await response.json();
+
+  if (response.ok) {
+    // console.log(data);
+
+    // setToken(data.token);
+    // setName(data.nickname);
+
+    router.push("/sign-in");
+  } else {
+    alert(data.message);
+    console.error("註冊失敗", data.message);
+  }
+};
+onMounted(() => {
+  token.value = authStore.token;
+  // console.log(token.value);
+  if (token.value) {
+    checkOutFn();
+  } else {
+    router.push("/sign-in");
+  }
+
+  // console.log(token.value);
+});
 </script>
 <template>
   <div v-if="!isHidden" class="flex justify-between px-1 lg:px-3 items-center">
